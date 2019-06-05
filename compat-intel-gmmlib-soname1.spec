@@ -4,7 +4,7 @@
 #
 Name     : compat-intel-gmmlib-soname1
 Version  : 18.3.0
-Release  : 1
+Release  : 2
 URL      : https://github.com/intel/gmmlib/archive/intel-gmmlib-18.3.0.tar.gz
 Source0  : https://github.com/intel/gmmlib/archive/intel-gmmlib-18.3.0.tar.gz
 Summary  : Intel(R) Graphics Memory Management Library
