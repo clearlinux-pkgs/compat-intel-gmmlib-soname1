@@ -4,7 +4,7 @@
 #
 Name     : compat-intel-gmmlib-soname1
 Version  : 18.3.0
-Release  : 2
+Release  : 3
 URL      : https://github.com/intel/gmmlib/archive/intel-gmmlib-18.3.0.tar.gz
 Source0  : https://github.com/intel/gmmlib/archive/intel-gmmlib-18.3.0.tar.gz
 Summary  : Intel(R) Graphics Memory Management Library
@@ -13,20 +13,12 @@ License  : MIT
 Requires: compat-intel-gmmlib-soname1-lib = %{version}-%{release}
 Requires: compat-intel-gmmlib-soname1-license = %{version}-%{release}
 BuildRequires : buildreq-cmake
+# Suppress generation of debuginfo
+%global debug_package %{nil}
 
 %description
 Intel(R) Graphics Memory Management Library
 *******************************************
-
-%package dev
-Summary: dev components for the compat-intel-gmmlib-soname1 package.
-Group: Development
-Requires: compat-intel-gmmlib-soname1-lib = %{version}-%{release}
-Provides: compat-intel-gmmlib-soname1-devel = %{version}-%{release}
-
-%description dev
-dev components for the compat-intel-gmmlib-soname1 package.
-
 
 %package lib
 Summary: lib components for the compat-intel-gmmlib-soname1 package.
@@ -52,121 +44,127 @@ license components for the compat-intel-gmmlib-soname1 package.
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-export LANG=C
-export SOURCE_DATE_EPOCH=1544711480
+export LANG=C.UTF-8
+export SOURCE_DATE_EPOCH=1567812107
 mkdir -p clr-build
 pushd clr-build
+export GCC_IGNORE_WERROR=1
+export AR=gcc-ar
+export RANLIB=gcc-ranlib
+export NM=gcc-nm
+export CFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
+export FCFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
+export FFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
+export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=4 "
 %cmake ..
-make  %{?_smp_mflags}
+make  %{?_smp_mflags} VERBOSE=1
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1544711480
+export SOURCE_DATE_EPOCH=1567812107
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/compat-intel-gmmlib-soname1
 cp LICENSE.md %{buildroot}/usr/share/package-licenses/compat-intel-gmmlib-soname1/LICENSE.md
 pushd clr-build
 %make_install
 popd
+## Remove excluded files
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/CachePolicy/GmmCachePolicyConditionals.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/CachePolicy/GmmCachePolicyResourceUsageDefinitions.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/CachePolicy/GmmCachePolicyUndefineConditionals.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/CachePolicy/GmmGen10CachePolicy.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/CachePolicy/GmmGen11CachePolicy.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/CachePolicy/GmmGen8CachePolicy.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/CachePolicy/GmmGen9CachePolicy.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Platform/GmmPlatforms.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Texture/GmmTexture.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/CpuSwizzleBlt/CpuSwizzleBlt.c
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/CpuSwizzleBlt/assert.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/GmmLog.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/async_logger.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/common.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/async_log_helper.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/async_logger_impl.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/file_helper.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/format.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/line_logger_fwd.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/line_logger_impl.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/log_msg.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/logger_impl.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/mpmc_bounded_q.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/null_mutex.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/os.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/pattern_formatter_impl.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/registry.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/spdlog_impl.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/fmt/bundled/format.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/fmt/bundled/ostream.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/fmt/bundled/printf.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/fmt/fmt.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/fmt/ostr.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/formatter.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/logger.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/android_sink.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/ansicolor_sink.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/base_sink.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/dist_sink.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/file_sinks.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/msvc_sink.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/null_sink.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/ostream_sink.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/sink.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/stdout_sinks.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/syslog_sink.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/wincolor_sink.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/spdlog.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/tweakme.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/Utility/GmmUtility.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/CachePolicy/GmmCachePolicyGen10.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/CachePolicy/GmmCachePolicyGen11.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/CachePolicy/GmmCachePolicyGen8.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/CachePolicy/GmmCachePolicyGen9.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmCachePolicy.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmCachePolicyCommon.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmCachePolicyExt.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmClientContext.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmCommonExt.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmConst.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmDebug.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmFormatTable.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmGttExt.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmInfo.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmInfoExt.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmInternal.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmLibDll.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmLibDllName.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmMemAllocator.hpp
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmPlatformExt.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmProto.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmResourceFlags.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmResourceInfo.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmResourceInfoCommon.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmResourceInfoExt.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmTextureExt.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Common/GmmUtil.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/External/Linux/GmmResourceInfoLin.h
+rm -f %{buildroot}/usr/include/igdgmm/GmmLib/inc/GmmLib.h
+rm -f %{buildroot}/usr/include/igdgmm/igdgmm.h
+rm -f %{buildroot}/usr/include/igdgmm/inc/common/gfxmacro.h
+rm -f %{buildroot}/usr/include/igdgmm/inc/common/gfxplatform.h
+rm -f %{buildroot}/usr/include/igdgmm/inc/common/gtsysinfo.h
+rm -f %{buildroot}/usr/include/igdgmm/inc/common/igfxfmid.h
+rm -f %{buildroot}/usr/include/igdgmm/inc/common/sku_wa.h
+rm -f %{buildroot}/usr/include/igdgmm/inc/portable_compiler.h
+rm -f %{buildroot}/usr/include/igdgmm/inc/umKmInc/UmKmDmaPerfTimer.h
+rm -f %{buildroot}/usr/include/igdgmm/inc/umKmInc/UmKmEnum.h
+rm -f %{buildroot}/usr/include/igdgmm/inc/umKmInc/sharedata.h
+rm -f %{buildroot}/usr/include/igdgmm/util/g_gfxDebug.h
+rm -f %{buildroot}/usr/include/igdgmm/util/gfxDebug.h
+rm -f %{buildroot}/usr/lib64/libigdgmm.so
+rm -f %{buildroot}/usr/lib64/pkgconfig/igdgmm.pc
 
 %files
 %defattr(-,root,root,-)
-
-%files dev
-%defattr(-,root,root,-)
-%exclude /usr/include/igdgmm/GmmLib/CachePolicy/GmmCachePolicyConditionals.h
-%exclude /usr/include/igdgmm/GmmLib/CachePolicy/GmmCachePolicyResourceUsageDefinitions.h
-%exclude /usr/include/igdgmm/GmmLib/CachePolicy/GmmCachePolicyUndefineConditionals.h
-%exclude /usr/include/igdgmm/GmmLib/CachePolicy/GmmGen10CachePolicy.h
-%exclude /usr/include/igdgmm/GmmLib/CachePolicy/GmmGen11CachePolicy.h
-%exclude /usr/include/igdgmm/GmmLib/CachePolicy/GmmGen8CachePolicy.h
-%exclude /usr/include/igdgmm/GmmLib/CachePolicy/GmmGen9CachePolicy.h
-%exclude /usr/include/igdgmm/GmmLib/Platform/GmmPlatforms.h
-%exclude /usr/include/igdgmm/GmmLib/Texture/GmmTexture.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/CpuSwizzleBlt/CpuSwizzleBlt.c
-%exclude /usr/include/igdgmm/GmmLib/Utility/CpuSwizzleBlt/assert.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/GmmLog.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/async_logger.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/common.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/async_log_helper.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/async_logger_impl.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/file_helper.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/format.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/line_logger_fwd.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/line_logger_impl.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/log_msg.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/logger_impl.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/mpmc_bounded_q.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/null_mutex.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/os.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/pattern_formatter_impl.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/registry.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/details/spdlog_impl.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/fmt/bundled/format.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/fmt/bundled/ostream.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/fmt/bundled/printf.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/fmt/fmt.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/fmt/ostr.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/formatter.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/logger.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/android_sink.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/ansicolor_sink.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/base_sink.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/dist_sink.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/file_sinks.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/msvc_sink.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/null_sink.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/ostream_sink.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/sink.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/stdout_sinks.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/syslog_sink.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/sinks/wincolor_sink.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/spdlog.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmLog/spdlog/tweakme.h
-%exclude /usr/include/igdgmm/GmmLib/Utility/GmmUtility.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/CachePolicy/GmmCachePolicyGen10.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/CachePolicy/GmmCachePolicyGen11.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/CachePolicy/GmmCachePolicyGen8.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/CachePolicy/GmmCachePolicyGen9.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmCachePolicy.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmCachePolicyCommon.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmCachePolicyExt.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmClientContext.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmCommonExt.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmConst.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmDebug.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmFormatTable.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmGttExt.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmInfo.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmInfoExt.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmInternal.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmLibDll.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmLibDllName.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmMemAllocator.hpp
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmPlatformExt.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmProto.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmResourceFlags.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmResourceInfo.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmResourceInfoCommon.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmResourceInfoExt.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmTextureExt.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Common/GmmUtil.h
-%exclude /usr/include/igdgmm/GmmLib/inc/External/Linux/GmmResourceInfoLin.h
-%exclude /usr/include/igdgmm/GmmLib/inc/GmmLib.h
-%exclude /usr/include/igdgmm/igdgmm.h
-%exclude /usr/include/igdgmm/inc/common/gfxmacro.h
-%exclude /usr/include/igdgmm/inc/common/gfxplatform.h
-%exclude /usr/include/igdgmm/inc/common/gtsysinfo.h
-%exclude /usr/include/igdgmm/inc/common/igfxfmid.h
-%exclude /usr/include/igdgmm/inc/common/sku_wa.h
-%exclude /usr/include/igdgmm/inc/portable_compiler.h
-%exclude /usr/include/igdgmm/inc/umKmInc/UmKmDmaPerfTimer.h
-%exclude /usr/include/igdgmm/inc/umKmInc/UmKmEnum.h
-%exclude /usr/include/igdgmm/inc/umKmInc/sharedata.h
-%exclude /usr/include/igdgmm/util/g_gfxDebug.h
-%exclude /usr/include/igdgmm/util/gfxDebug.h
-%exclude /usr/lib64/libigdgmm.so
-%exclude /usr/lib64/pkgconfig/igdgmm.pc
 
 %files lib
 %defattr(-,root,root,-)
@@ -175,4 +173,4 @@ popd
 
 %files license
 %defattr(0644,root,root,0755)
-%exclude /usr/share/package-licenses/compat-intel-gmmlib-soname1/LICENSE.md
+/usr/share/package-licenses/compat-intel-gmmlib-soname1/LICENSE.md
